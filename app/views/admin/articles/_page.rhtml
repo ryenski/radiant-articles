@@ -1,0 +1,24 @@
+<tr class="node level-0">
+  <td class="page">
+
+    <span class="w1">
+      <%= image_tag("/images/admin/page.png") %>
+      <%= link_to(content_tag(:span, "#{"#{content_tag(:small, "featured", :class => "warning")} - " if page.feature}#{page.title}", :class => "title"), edit_admin_article_path(page)) %>
+      <small><%= link_to(image_tag("/images/admin/page_right.gif", :title => "View this article"), page.url, :title => "View this article") %></small>
+    </span>
+    
+    
+  </td>
+  
+
+  
+  <td><small><%= page.department.title %></small></td>
+  
+  <td><small><%= page.category.title %></small></td>
+  
+  <td><small><%= page.date_published.to_formatted_s(:long) %></small></td>
+  
+  <td>
+    <%= link_to image('remove', :alt => 'remove page'), article_remove_url(:id => page, :return_to => admin_articles_path) %>
+  </td>
+</tr>

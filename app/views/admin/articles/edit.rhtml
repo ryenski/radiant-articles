@@ -1,0 +1,43 @@
+<h1>Edit Article</h1>
+
+<% form_for :page, :url => admin_article_path(@page), :html => {:method => :put, :multipart => true} do |f| %>
+  <%= render :partial => "form", :locals => {:f => f} %>
+<% end %>
+
+<div id="popups">
+<div class="popup" id="add-part-popup" style="display: none">
+  <div id="busy" class="busy" style="display: none"><%= image 'spinner.gif' %></div>
+  <h3>Add Part</h3>
+  <% form_remote_tag(
+    :url => page_add_part_url,
+    :update => "pages", 
+    :position => :bottom, 
+    :loading => 'part_loading()', 
+    :complete => 'part_added()',
+    :condition => 'valid_part_name()'
+  ) do %> 
+    <div>
+      <%= hidden_field_tag 'index', @index, :id => 'part-index-field' %>
+      <%= text_field_tag "part[name]", "", :id => 'part-name-field', :maxlength => 100 %> 
+      <%= submit_tag "Add Part", :id => 'add-part-button' %>
+    </div>
+    <p><%= link_to_function 'Close', "$(this).up('.popup').hide()", :class => 'close-link' %></p>
+  <% end %>
+</div>
+</div>
+
+<% content_for :page_css do %>
+  #content #extended-metadata .fieldset {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: .5em;
+    padding: 0;
+  }
+  #content #extended-metadata .fieldset td.label {
+    text-align: left;
+    width: 15%;
+  }
+  #content #extended-metadata .fieldset td.field .textbox {
+    width: 90%;
+  }
+<% end %>

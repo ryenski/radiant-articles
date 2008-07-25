@@ -1,0 +1,181 @@
+<div class="form-area">
+  
+  <p class="title">
+    <label for="page_title">Article Title</label>
+    <%= text_field "page", "title", :class => 'textbox', :maxlength => 255 %>
+  </p>
+  
+  <div id="extended-metadata" class="row"<%= meta_visible(:meta) %>>
+    
+    <table class="fieldset" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td class="label"><label for="page_slug">Slug</label></td>
+        <td class="field"><%= text_field "page", "slug" %></td>
+      </tr>
+      
+      <tr>
+        <td class="label"><label for="page_breadcrumb">Breadcrumb</label></td>
+        <td class="field"><%= text_field "page", "breadcrumb" %></td>
+      </tr>
+      
+    </table>
+    
+    <script type="text/javascript">
+    // <![CDATA[
+      $title = $('page_title');
+      $slug = $('page_slug');
+      $breadcrumb = $('page_breadcrumb');
+      $old_title = $title.value || '';
+      function title_updated() {
+        if ($old_title.toSlug() == $slug.value) $slug.value = $title.value.toSlug();
+        if ($old_title == $breadcrumb.value) $breadcrumb.value = $title.value;
+        $old_title = $title.value;
+      }
+      new Form.Element.Observer('page_title', 0.15, title_updated);
+    // ]]>
+    </script>
+    
+  </div>
+  
+  
+  <p class="more-or-less">
+    <small>
+      <a href="#" onclick="<%= toggle_javascript_for('extended-metadata') %>"<%= meta_visible(:meta_more) %> id="more-extended-metadata">More</a>
+      <a href="#" onclick="<%= toggle_javascript_for('extended-metadata') %>"<%= meta_visible(:meta_less) %> id="less-extended-metadata">Less</a>
+    </small>
+  </p>
+  
+  <table border="0" style="clear:both; margin-bottom:1em">
+    <tr>
+      <td><label for="page_department_id">Department</label></td>
+      <td><%= collection_select("page", "department_id", Department.find(:all, :order => "title ASC"), :id, :title, {}) %> </td>
+    </tr>
+    
+    <tr>
+      <td><label for="page_category_id">Category</label></td>
+      <td>
+        <script type="text/javascript" charset="utf-8">
+          function rearrange_form(elem){
+            switch(elem.value){
+              case "1":
+                $('start_date').show();
+                $('end_date').show();
+                break;
+              case "5":
+                $('start_date').show();
+                $('end_date').show();
+                break;
+              default:
+                $('start_date').hide();
+                $('end_date').hide();
+                break;
+            }
+          }
+          </script>
+
+        <%= collection_select("page", "category_id", Category.find(:all, :order => "title ASC"), :id, :title, {}, :onchange => "rearrange_form(this);") %> 
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td><label for="page_published_at">Date Published</label></td>
+      <td>
+        <%= datetime_select("page", "published_at", :start_year => (Date.today.year - 1)) %> 
+      </td>
+    </tr>
+    
+    <tr id="start_date"<%= %Q{ style="display:none;"} if ![1,5].include?(@page.category.id) %>>
+      <td><label for="page_event_start_date">Event Start Date</label></td>
+      <td>
+        <%= datetime_select("page", "event_start_date", :start_year => (Date.today.year - 1), :include_blank => true) %> 
+      </td>
+    </tr>
+    
+    
+    <tr id="end_date"<%= %Q{ style="display:none;"} if ![1,5].include?(@page.category.id) %>>
+      <td><label for="page_event_end_date">Event End Date</label></td>
+      <td>
+        <%= datetime_select("page", "event_end_date", :start_year => (Date.today.year - 1), :include_blank => true) %> 
+      </td>
+    </tr>
+    
+  </table>
+  
+  <hr class="clear" />
+  
+  
+  <div id="tab-control">
+    <div id="tabs" class="tabs">
+      <div id="tab-toolbar">
+        <%= link_to image('plus'), 'javascript:toggle_add_part_popup()', :title => 'Add Tab' %>
+        <%= link_to image('minus'), 'javascript:tabControl.removeTab(tabControl.selected)', :title => 'Remove Tab', :confirm => 'Delete the current tab?' %>
+      </div>
+    </div>
+    <div id="pages" class="pages">
+  <%= render :partial => 'part', :collection => @page.parts %>
+    </div>
+  </div>
+  
+
+
+    
+  <hr class="clear" />
+
+  <p style="clear:left"><label for="page_status_id">Status</label>
+    <%= select "page", "status_id", Status.find_all.map { |s| [s.name, s.id] } %></p>
+
+  
+  <p style="clear:left">
+    <%= check_box "page", "enable_comments" %>
+    <label for="page_enable_comments">Allow Comments?</label> 
+
+    <small>
+      <%= link_to "Currently #{@page.comments_count} &mdash; View comments", admin_page_comments_path(:page_id => @page.id) unless @page.new_record? or @page.comments_count < 1 %>
+    </small>
+  </p>
+  
+  <div style="clear:left">
+    <p>
+      <%= check_box "page", "feature", :onchange => "showHide('page_feature', 'page_feature_warning'); showHide('page_feature', 'page_feature_position_box')" %>
+      <label for="page_feature">Feature on Home Page?</label>
+      
+      <span id="page_feature_position_box" style="<%= "display:none;" unless @page.feature %>">
+        &nbsp; &nbsp; &nbsp;
+        <label for="page_feature_position">Position of this feature in the rotation</label>
+        <%= select("page", "feature_position", (1..10).each{|i| [i,i] }, {:include_blank => true} ) %> (optional)
+      </span>
+      
+      <span id="page_feature_warning" style="<%= "display:none;" unless @page.feature %>">
+        <br />
+        <strong>Notice:</strong> For best results, please upload a picture that is at least 605 pixels wide and 260 pixels tall. 
+      </span>
+    </p>
+    
+    
+    
+
+    
+    
+  </div>
+  
+  <script type="text/javascript" charset="utf-8">
+    function showHide(elem, box){
+      $(elem).checked ? Element.show($(box)) : Element.hide($(box));
+    }
+  </script>
+    
+</div>
+
+<%= render :partial => "/admin/page/attachments_box", :object => @page %>
+
+
+
+<div class="buttons">
+  <%= submit_tag("Save Article", :class => "button", :id => "comment_submit_button") %> 
+  or <%= link_to("Cancel", admin_articles_path) %>
+</div>
+
+
+
+

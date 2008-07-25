@@ -1,0 +1,36 @@
+
+<h1>Articles</h1>
+
+  <form class="quickform" method="get">
+    
+    <label>View</label>
+    <select id="category_id" name="category_id" onchange="JavaScript:this.form.submit();">
+      <option value="">[ category ]</option>
+      <%= options_from_collection_for_select(Category.find(:all, :order => "title ASC"), :id, :title, params[:category_id].to_i) %> 
+    </select>
+    
+    <label>in</label>
+    
+    <select id="department_id" name="department_id" onchange="JavaScript:this.form.submit();">
+      <option value="">[ department ]</option>
+      <%= options_from_collection_for_select(Department.find(:all, :order => "title ASC"), :id, :title, params[:department_id].to_i) %> 
+    </select>
+    
+  </form>
+
+<p><%= link_to "New Article", new_admin_article_path %></p>
+
+<table class="index" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <th>Title</th>
+    <th>Department</th>
+    <th>Category</th>
+    <th>Published</th>
+    <th>Modify</th>
+  </tr>
+  
+  <tbody>
+    <%= render :partial => "page", :collection => @pages %>
+  </tbody>
+  
+</table>

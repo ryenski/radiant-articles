@@ -1,0 +1,8 @@
+<h1 id="remove_article">Remove <%= @page.title %></h1>
+<p>Are you sure you want to <strong class="warning">permanently remove</strong> this article?</p>
+
+<h3><%= image("page") %><%= @page.title %></h3>
+
+<form method="post" action="">
+  <p class="buttons"><%= submit_tag "Delete", :class => 'button' %> or <%= link_to 'Cancel', admin_articles_url %></p>
+</form>
